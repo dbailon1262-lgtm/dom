@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carta Il Signore degli Anelli</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f9;
+            margin: 0;
+        }
+        .card-container {
+            background-color: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            text-align: center;
+            max-width: 320px;
+        }
+        .card-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-top: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card-container">
+        <!-- El nombre del personaje se inyectará aquí -->
+        <h2 id="character-name">Caricamento in corso...</h2>
+        <!-- La imagen del personaje se inyectará aquí -->
+        <div id="card-media"></div>
+    </div>
+
+    <script>
+        // URL absoluta del endpoint público oficial de RingsDB para obtener una carta específica (ej. '01001')
+        const cardCode = '01001';
+        const apiUrl = `https://ringsdb.com{cardCode}.json`;
+
+        async function fetchLordOfTheRingsCard() {
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error(`Errore HTTP! Status: ${response.status}`);
+                }
+                
+                const cardData = await response.json();
+                
+                // 1. Mostrar el nombre del personaje obtenido de la API
+                document.getElementById('character-name').textContent = cardData.name;
+                
+                // 2. Construir la URL absoluta de la imagen utilizando el dominio de la plataforma
+                if (cardData.imagesrc) {
+                    const fullImageUrl = `https://ringsdb.com${cardData.imagesrc}`;
+                    document.getElementById('card-media').innerHTML = `
+                        <img src="${fullImageUrl}" alt="${cardData.name}" class="card-image">
+                    `;
+                } else {
+                    document.getElementById('card-media').textContent = "Immagine non disponibile per questa carta";
+                }
+                
+            } catch (error) {
+                console.error('Errore durante il fetch:', error);
+                document.getElementById('character-name').textContent = 'Errore nel caricamento dei dati';
+            }
+        }
+
+        // Inicializar la petición al cargar la estructura del documento
+        fetchLordOfTheRingsCard();
+    </script>
+
+</body>
+</html>
